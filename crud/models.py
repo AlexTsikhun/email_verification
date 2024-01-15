@@ -11,5 +11,6 @@ class EmailVerification():
     def __str__(self) -> str:
         return self.email
 
+# redefined base user
 class User(AbstractUser):
     pass
