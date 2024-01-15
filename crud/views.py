@@ -23,10 +23,10 @@ class Register(View):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password1')
 
-            user = authenticate(username=username, password=password)
+            user = authenticate(email=email, password=password)
             login(request, user)
             return redirect('home')
         xt = {
@@ -39,6 +39,6 @@ class ProfileView(View):
     template_name = 'profile.html'
 
     def get(self, request):
-        data = models.User.objects.get('qwert')
+        data = models.User.objects.all()
         return render(request, self.template_name, {'data':data})
 
