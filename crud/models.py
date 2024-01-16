@@ -3,15 +3,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-# Create your models here.
-class EmailVerification():
-    email = models.EmailField()
-    is_verified = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return self.email
-
 # redefined base user
 class User(AbstractUser):
     # redefine email - field should be unique
@@ -19,5 +10,10 @@ class User(AbstractUser):
         _('email address'),
         unique=True,
     )
+    email_verified = models.BooleanField(default=False)
+    
     USERNAME_FIELD = 'email'  # For authentication
     REQUIRED_FIELDS = ['username']  # For superuser
+
+# DELETE WITH AJAX
+# EDIT NEW PATH
