@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+
+<div class="col-md-8">
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <h6 class="mb-0">Username</h6>
+                </div>
+                <span class="col-sm-9 text-secondary" id="username">{{ user_info.username }}
+                </span>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-3">
+                    <h6 class="mb-0">Email</h6>
+                </div>
+                <span class="col-sm-9 text-secondary" id="email">{{ user_info.email }}</span>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-3">
+                    <h6 class="mb-0">Verified</h6>
+                </div>
+                <span class="col-sm-9 text-secondary" id="verified">{{ user_info.email_verified }}</span>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-3">
+                    <h6 class="mb-0">Joined date</h6>
+                </div>
+                <div class="col-sm-9 text-secondary" id="date_joined">{{ user_info.date_joined }}</div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-6">
+                    <button class="btn btn-warning " onclick="editUser({{user_info.id}})" data-toggle="modal"
+                        data-target="#myModal">Edit</button>
+                </div>
+                <div class="col-sm-6">
+                    <a class="btn btn-danger" href="{% url 'delete_user' user_info.id %}">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Update User</h4>
+            </div>
+            <form id="updateUser" action="">
+                <div class="modal-body">
+                    <input class="form-control" id="form-isd" type="hidden" name="formId" />
+
+                    <label for="username">Username</label>
+                    <input class="form-control" id="form-username" type="" name="formUserName" />
+
+                    <label for="email">Email</label>
+                    <input class="form-control" id="form-email" type="text" name="formEmail" />
+
+                    <label for="verified">Verified</label>
+                    <input class="form-control" id="form-verified" type="" name="formVerified" />
+
+                    <label for="date_joined">Joined date</label>
+                    <input class="form-control" id="form-date_joined" type="datetime" name="formDateJoined" />
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // fill the modal form
+    function editUser(id) {
+        if (id) {
+            // get val. from page by id
+            username = $("#username").text();
+            email = $('#email').text();
+            verify = $('#verified').text();
+            date_joined = $('#date_joined').text();
+            // set val. to the form
+            $('#form-username').val(username);
+            $('#form-email').val(email);
+            $('#form-verified').val(verify);
+            $('#form-date_joined').val(date_joined);
+        }
+    }
+
+    $("form#updateUser").submit(function () {
+        // var idInput = $('input[name="formId"]').val().trim();
+        var userNameInput = $('input[name="formUserName"]').val().trim();
+        var emailInput = $('input[name="formEmail"]').val().trim();
+        var verifiedInput = $('input[name="formVerified"]').val().trim();
+        var dateJoinedInput = $('input[name="formDateJoined"]').val().trim();
+        console.log(userNameInput);
+        if (userNameInput && emailInput && verifiedInput && dateJoinedInput) {
+            $.ajax({
+                url: '{% url "update_user" user_info.id %}',
+                data: {
+                    // this data goes to views.py
+                    'username': userNameInput,
+                    'email': emailInput,
+                    'verified': verifiedInput,
+                    'date_joined': dateJoinedInput,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    if (data.user) {
+                        console.log('data.user', data.user);
+                        updateToUserTabel(data.user);
+                    }
+                }
+            });
+
+
+        } else {
+            alert("All fields must have a valid value.");
+        }
+        // $('form#updateUser').trigger("reset");
+        // $('#myModal').modal('hide');
+        // console.log('-');
+        return false;
+    });
+
+    function updateToUserTabel(user) {
+        console.log('@')
+        $(".text-secondary").each(function () {
+            // find each tag with id
+            var attr = $(this).attr("id");
+            console.log(attr);
+            if (attr == "username") {
+                $(this).text(user.username);
+            } else if (attr == "email") {
+                $(this).text(user.email);
+            } else if (attr == "verified") {
+                $(this).text(user.verified);
+            } else {
+                $(this).text(user.date_joined);
+            }
+        });
+    }
+</script>
+{% endblock %}

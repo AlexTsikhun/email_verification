@@ -1,7 +1,8 @@
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.core.exceptions import ValidationError
-from django.shortcuts import redirect, render
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
 
@@ -74,10 +75,57 @@ class MyLoginView(View):
     form = AuthenticationForm
     
 
-class ProfileView(View):
-    template_name = 'profile.html'
+class DashboardView(View):
+    template_name = 'dashboard.html'
 
     def get(self, request):
         data = models.User.objects.all()
-        return render(request, self.template_name, {'data':data})
+        return render(request, self.template_name, {'table_data':data})
 
+
+class UserInfoView(View):
+    template_name = 'user_info.html'
+    def get(self, request, user_id):
+        user_info = models.User.objects.get(id=user_id)
+        context = {
+            'user_info': user_info,
+        }
+        return render(request, self.template_name, context)
+
+
+class DeleteUserView(View):
+    def get(self, request, user_id):
+        # delete_user = get_object_or_404(models.User, id=user_id)
+        delete_user = models.User.objects.get(id=user_id)
+        delete_user.delete()
+        return redirect('dashboard')
+
+
+class UpdateUserView(View):
+    def  get(self, request, user_id):
+        # get updated data from modal window
+        username = request.GET.get('username')
+        email = request.GET.get('email')
+        verified = request.GET.get('verified')
+        date_joined = request.GET.get('date_joined')
+        # email = request.POST.get('email')
+        obj = models.User.objects.get(id=user_id)
+        # 
+        obj.username = username
+        obj.email = email
+        obj.email_verified = verified
+        obj.date_joined = date_joined
+
+        obj.save()
+
+        user = {
+                'username': obj.username,
+                'email': obj.email,
+                'email_verified': obj.email_verified,
+                'date_joined': obj.date_joined,
+        }
+        print(user)
+        data = {
+            'user': user,
+        }
+        return JsonResponse(data)
