@@ -9,7 +9,7 @@ from django.views import View
 from crud import models
 from crud.forms import AuthenticationForm, UserCreationForm
 
-from .utils import send_email_for_veiry
+from .utils import is_verify_email, send_email_for_veiry
 
 User = get_user_model()
 
@@ -36,8 +36,11 @@ class Register(View):
             user = authenticate(email=email, password=password)
             # login(request, user)
             # return redirect('home')
-            send_email_for_veiry(request, user)
-            return redirect('confirm_email')
+
+            # Check email, but form also checks
+            if is_verify_email(email):
+                send_email_for_veiry(request, user)
+                return redirect('confirm_email')
         xt = {
             'form': form,
         }
@@ -108,9 +111,9 @@ class UpdateUserView(View):
         email = request.GET.get('email')
         verified = request.GET.get('verified')
         date_joined = request.GET.get('date_joined')
-        # email = request.POST.get('email')
+        
         obj = models.User.objects.get(id=user_id)
-        # 
+        # change actual data to modified
         obj.username = username
         obj.email = email
         obj.email_verified = verified

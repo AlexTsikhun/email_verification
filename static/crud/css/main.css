@@ -490,6 +490,19 @@ iframe {
 }
 
 
+.validation {
+    position: absolute;
+    z-index: 500;
+    left: 10%;
+
+    color: #dc3545;
+    background-color: #f8d7da;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    /* margin-right: 15px; */
+}
+
 /*------------------------------------------------------------------
   [ Alert validate ]*/
 

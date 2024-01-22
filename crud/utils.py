@@ -1,3 +1,5 @@
+import environ
+import requests
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -23,4 +25,15 @@ def send_email_for_veiry(request, user):
         to=[user.email],
     )
     email.send()
+
+def is_verify_email(email):
+    env = environ.Env()
+    HUNTER_API_KEY = env('HUNTER_API_KEY')
+    url = f'https://api.hunter.io/v2/email-verifier?email={email}&api_key={HUNTER_API_KEY}'
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception(f'Unenspected status code {response.status_code}')
+    if response.json()['data']['status'] != 'valid':
+        raise Exception(f'Not valid! status: {response.json()["data"]["status"]}')
+    return True
 
