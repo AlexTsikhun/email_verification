@@ -21,14 +21,13 @@ class UserCreationForm(DjangoUserCreationForm):
 
 
 class AuthenticationForm(DjangoUserCreationForm):
-    
     def clean(self):
-        username = self.cleaned_data.get('username')
+        email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
 
-        if username is not None and password:
+        if email is not None and password:
             self.user_cache = authenticate(
-                self.request, username=username, password=password
+                self.request, email=email, password=password
             )
             if self.user_cache.email_verify:
                 send_email_for_veiry(self.request, self.user_cache)
@@ -42,3 +41,5 @@ class AuthenticationForm(DjangoUserCreationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+# back btn

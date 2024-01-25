@@ -6,6 +6,7 @@ from crud import views
 urlpatterns = [
     # redefine existing `login`
     path('login/', views.MyLoginView.as_view(), name='login'),
+
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
 
     path('users/', include('django.contrib.auth.urls')),

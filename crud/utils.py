@@ -31,9 +31,12 @@ def is_verify_email(email):
     HUNTER_API_KEY = env('HUNTER_API_KEY')
     url = f'https://api.hunter.io/v2/email-verifier?email={email}&api_key={HUNTER_API_KEY}'
     response = requests.get(url)
-    if response.status_code != 200:
-        raise Exception(f'Unenspected status code {response.status_code}')
-    if response.json()['data']['status'] != 'valid':
-        raise Exception(f'Not valid! status: {response.json()["data"]["status"]}')
+    try:
+        if response.status_code != 200:
+            raise Exception(f'Unenspected status code {response.status_code}')
+        if response.json()['data']['status'] != 'valid':
+            raise Exception(f'Not valid! status: {response.json()["data"]["status"]}')
+    except Exception:
+        return False
     return True
 

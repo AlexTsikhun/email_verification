@@ -1,8 +1,9 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, get_user_model, login
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
 
@@ -41,6 +42,7 @@ class Register(View):
             if is_verify_email(email):
                 send_email_for_veiry(request, user)
                 return redirect('confirm_email')
+            messages.warning(request, 'Invalid email address. Please, provide a valid email!')
         xt = {
             'form': form,
         }
